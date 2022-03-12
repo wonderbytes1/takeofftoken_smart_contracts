@@ -142,7 +142,7 @@ contract VerifySignature is Ownable {
     }
 }
 
-contract privateSale is VerifySignature{
+contract PrivateSale is VerifySignature{
     uint256 public releaseTime;
     uint256 public tokenPrice;
     uint256 public minLimit;
