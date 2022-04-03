@@ -754,7 +754,7 @@ contract TAKEOFFTOKEN is Context, IERC20, Ownable {
         // PANCAKE TESTNET
         IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0xD99D1c33F9fC3444f8101754aBC46c52416550D1);
          
-        // KOVAN TESTNET
+        // ETH Mainnet, ROPSTEN, RINKEBY, KOVAN TESTNET
         //IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
          
          
@@ -801,19 +801,21 @@ contract TAKEOFFTOKEN is Context, IERC20, Ownable {
     }
 
     // THIS FUNCTION WILL CALL : 
-    //      WHEN SOMEONE BUY, SELL, OR TRANSFER THE TOKENS 
+    // WHEN SOMEONE BUY, SELL, OR TRANSFER THE TOKENS 
     function transfer(address recipient, uint256 amount) public override returns (bool) {
-        if(address(this) == msg.sender){
-            _transfer(_msgSender(), recipient, amount);
-        }
-        else{
-            //require(block.timestamp >= releaseTime,"Token is Paused in Pre-Sale");
-            _transfer(_msgSender(), recipient, amount);    
-        }
-        
+        _transfer(_msgSender(), recipient, amount);    
         return true;
     }
     
+    // THIS FUNCTION WILL CALL : 
+    // WHEN SOMEONE BUY, SELL, OR TRANSFER THE TOKENS 
+    function batchTransfer(address[] memory recipient, uint256[] memory amount) public returns (bool) {
+        require(recipient.length == amount.length,"You are passing wrong values");
+        for(uint8 i = 0; i < recipient.length; i++)
+            _transfer(_msgSender(), recipient[i], amount[i]);    
+        return true;
+    }
+
     // THIS WILL RETURN THE ALLOWANCE 
     // ALLOWANCE MEANS: IF YOU WANT TO APPROVE SOMEONE WHO WILL SPEND YOUR TOKEN ON YOUR BEHALF
     function allowance(address owner, address spender) public view override returns (uint256) {
@@ -828,15 +830,8 @@ contract TAKEOFFTOKEN is Context, IERC20, Ownable {
 
     // THIS IS SAME AS TRANSFER
     function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
-        if(address(this) == msg.sender){
-            _transfer(_msgSender(), recipient, amount);
-            _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
-        }
-        else{
-            //require(block.timestamp >= releaseTime,"Token is Paused in Pre-Sale");
-            _transfer(sender, recipient, amount);
-            _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
-        }
+        _transfer(sender, recipient, amount);
+        _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
         return true;
     }
 
@@ -1186,9 +1181,7 @@ contract TAKEOFFTOKEN is Context, IERC20, Ownable {
     }
 
     function setFee(uint256 multiplier) private {
-        _taxFee = _taxFee.add(multiplier);
         _liquidityFee = _liquidityFee.add(multiplier);
-        _burnFee = _burnFee.add(multiplier);        
     }
 
     function swapAndLiquify(uint256 contractTokenBalance) private lockTheSwap {
