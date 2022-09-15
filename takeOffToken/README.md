@@ -4,10 +4,7 @@ This project demonstrates a basic Hardhat use case. It comes with a sample contr
 
 Try running some of the following tasks:
 
-```shell
-npx hardhat help
-npx hardhat test
-GAS_REPORT=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
-```
+1)Run command "npm install" for installing the required packages.
+2)Paste your api key of alchemy or infura in the hardhat.config.js.
+3)For running test cases, just type 'npx hardhat coverage'
+
